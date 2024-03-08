@@ -34,3 +34,79 @@ requirements
 languages
 - look at real world use cases provided by Quanming to see how our idea matches
 with other tools out there!
+
+# Check-in 2
+
+## Overview
+We have changed direction from our check-in 1 plan and will now be building a 
+program analysis tool that will provide information on assertion-based test
+coverage of visible effects from a given method.
+
+Given a specified method and the corresponding tests written to cover that 
+method, the tool will inform the user which effects of the method have been 
+covered with assertions by the tests and which effects remain uncovered. The method will 
+be specified by name and file path and the related tests by annotation.
+
+The tool will statically analyze the possible paths through a method and the effects
+given each path, which are control flow sensitive. The covered effects per method invocation
+within a test will be determined dynamically. After execution, the user will be 
+provided with a coverage score equal to the ratio of covered effects to total effects
+given the path.
+
+The overall goal is to provide the user with a better understanding of fields that 
+may have been modified but have not been tested for assertion given an execution.
+
+### Effects covered:
+- Return values
+- First-level changes to an object
+- Variable reassignment
+- Changes to lists
+
+### Stretch goals:
+- Remove annotation step - have the tool suggest relevant tests which the user can add/remove tests from
+- Cover deeper effects within the objects (e.g. global variables)
+
+## Timeline
+
+Weekly team check-ins Mondays 5-6pm (hybrid, location TBD)
+- Monday, March 11th:
+  - solidify technical design
+  - start research and implementation on least contentious pieces (likely won't be changed by user studies)
+- Tuesday, March 12 - User study 1 designed
+- Thursday, March 14 - User study 1 complete, findings ready for check-in
+-  **Friday, March 15 - Friday, March 29: Two-week sprint for MVP implementation**
+- Sunday, March 31 - MVP, user study 2
+- Friday, April 5 - Testing, user study changes
+- Saturday, April 6 - Video complete
+- Sunday, April 7 - Video submitted
+
+Check-ins involve reporting on progress, raising blocking issues, and coming up for solutions to stay on track. 
+Team will collaboratively determine the best course of action in these meetings to meet deadlines. For features 
+involving multiple people, designs, tasks, and division of workload will be negotiated between them and reported back 
+to the overall team. The expectation for these 'sub-teams' as they regularly communicate and are responsible for each 
+other.
+
+## Division of Responsibilities
+
+### AST Visitor API
+**Assigned**: Harry
+
+### Static Analysis
+**Assigned**: Ron, Louise
+
+### Dynamic Analysis
+**Assigned**: Henry, Mazen
+
+### User Studies
+**Assigned**: Henry, Louise
+
+### Video
+**Assigned**: Harry
+
+### Testing
+**Assigned**: All
+
+## Summary of Progress/TA Feedback
+Our project is still in the planning stages. Due to TA feedback we have changed direction for our project 
+but remain on track in the planning of our program analysis tool.
+
