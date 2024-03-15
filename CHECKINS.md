@@ -115,7 +115,8 @@ but remain on track in the planning of our program analysis tool.
 
 ## Summary of Progress/TA Feedback
 This week, we discussed our implementation strategy; scaffolded our repository; designed and executed our user study; researched relevant tools and libraries; and began work on our data structures.
-Guanming reaffirmed that the scope and nature of our tool was suitable for our project requirements.
+During our Thursday meeting, Guanming reaffirmed that the scope and nature of our tool was suitable for our project requirements.
+With these tasks completed, we are on track relative to our current project timeline (see Check-in 2).
 
 ## Mockups for User Study
 
