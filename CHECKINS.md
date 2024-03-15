@@ -110,3 +110,111 @@ other.
 Our project is still in the planning stages. Due to TA feedback we have changed direction for our project 
 but remain on track in the planning of our program analysis tool.
 
+
+# Check-in 3
+
+## Summary of Progress/TA Feedback
+This week, we discussed our implementation strategy; scaffolded our repository; designed and executed our user study; researched relevant tools and libraries; and began work on our data structures.
+Guanming reaffirmed that the scope and nature of our tool was suitable for our project requirements.
+
+## Mockups for User Study
+
+As our tool does not contain any visualization aspect, we determined that a critical, qualitative assessment of the tool would be more valuable to our design and development than a task-based study involving interpretation of program output. We discussed this during our TA check-in to confirm this was reasonable.
+The following code snippets were provided during our user studies to display different levels of effects coverage:
+
+<details>
+<summary>Code Snippets</summary>
+
+```java
+
+public class MaxTracker {
+private int highestEven = Integer.MIN_VALUE;
+private int highestOdd = Integer.MIN_VALUE;
+
+    // Constructor
+    public MaxTracker() {
+    }
+
+    // Adds number to track in this class.
+    // Returns whether it is higher than the highest even/odd
+    public boolean trackNumber(int number) {
+        if (number % 2 == 0) { // Check if the number is even
+            boolean higher = number > highestEven;
+            highestEven = Math.max(number, highestEven);
+            return higher;
+        } else {
+            boolean higher = number > highestOdd;
+            highestOdd = Math.max(number, highestOdd);
+            return higher;
+        }
+    }
+
+    public int getHighestEven() {
+        return highestEven;
+    }
+
+    public int getHighestOdd() {
+        return highestOdd;
+    }
+}
+
+public class TestMaxTracker {
+
+    @Test
+    @ComprehensiveTest(
+        testClass = MaxTracker.class,
+        testMethod = "trackNumber"
+    )
+    public void testMaxTracker0() {
+        MaxTracker tracker = new MaxTracker();
+        tracker.trackNumber(2);
+    }
+
+    @Test
+    @ComprehensiveTest(
+        testClass = MaxTracker.class,
+        testMethod = "trackNumber"
+    )
+    public void testMaxTracker50() {
+        MaxTracker tracker = new MaxTracker();
+        assertTrue(tracker.trackNumber(2));
+    }
+
+    @Test
+    @ComprehensiveTest(
+        testClass = MaxTracker.class,
+        testMethod = "trackNumber"
+    )
+    public void testMaxTracker100() {
+        MaxTracker tracker = new MaxTracker();
+        assertTrue(tracker.trackNumber(2));
+        assertEquals(2, tracker.getHighestEven());
+    }
+}
+```
+
+</details>
+
+
+
+### Critical feedback from our users:
+- The term “comprehensive” is misleading and limited in its evaluation of test suites
+    - It might lead users to assume that a comprehensive test has satisfied testing all relevant paths. We had differentiated the concepts of comprehensive tests and comprehensive test suites, but there may still be confusion and misinterpretation
+    - It implies that the tests at hand are complete, though there may still be work to be done (and vice versa for incomprehensive); path and effects coverage are not equal to a quality test suite
+- Most useful kinds of effects to cover would be parameter and list/array/field mutations (even just included as a warning)
+- Line numbers not strictly necessary; identifiers more useful
+- Writing the test name in the annotation is annoying - semantically linked
+
+### Suggestions:
+- Warnings when mutating public static or global fields, independent of coverage
+- Consider and therefore annotate test suites per class rather than each test per method
+- Allow users to exclude certain fields from analysis
+- Should limit to publicly-accessible fields (i.e., with getters)
+
+In light of this feedback, we have made the following changes to our design and timeline:
+- Disclude correct line numbers as a criterion for our MVP
+- Set ignore flag as a stretch goal
+- Limit field coverage to publicly-accessible fields
+- Prioritize coverage of parameter mutation (as that was considered the most helpful by both study participants)
+- Discuss class-based vs. method-based coverage
+- Replace or explain the term “comprehensive”
