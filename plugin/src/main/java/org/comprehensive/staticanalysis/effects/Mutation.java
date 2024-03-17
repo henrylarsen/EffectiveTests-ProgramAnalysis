@@ -5,9 +5,11 @@ package org.comprehensive.staticanalysis.effects;
  */
 public class Mutation extends Effect {
     private Object object;
+    private String objectName;
 
-    public Mutation(String methodName, int lineNumber, Object o) {
+    public Mutation(String methodName, int lineNumber, Object o, String objectName) {
         super(methodName, lineNumber);
         this.object = o;
+        this.objectName = objectName;
     }
 }
