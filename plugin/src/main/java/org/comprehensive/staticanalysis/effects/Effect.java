@@ -7,9 +7,11 @@ package org.comprehensive.staticanalysis.effects;
 public abstract class Effect {
     private String methodName;
     private int lineNumber;
+
     public String getMethodName() {
         return this.methodName;
     };
+
     public int getLineNumber() { return this.lineNumber; }
 
     public Effect(String methodName, int lineNumber) {
