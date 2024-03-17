@@ -12,4 +12,9 @@ public abstract class Effect {
     };
     public int getLineNumber() { return this.lineNumber; }
 
+    public Effect(String methodName, int lineNumber) {
+        this.methodName = methodName;
+        this.lineNumber = lineNumber;
+    }
+
 }

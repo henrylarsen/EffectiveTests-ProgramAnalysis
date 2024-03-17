@@ -6,7 +6,8 @@ package org.comprehensive.staticanalysis.effects;
 public class Mutation extends Effect {
     private Object object;
 
-    public Mutation(Object o) {
+    public Mutation(String methodName, int lineNumber, Object o) {
+        super(methodName, lineNumber);
         this.object = o;
     }
 }

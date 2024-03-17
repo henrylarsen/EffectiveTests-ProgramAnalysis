@@ -5,4 +5,7 @@ package org.comprehensive.staticanalysis.effects;
  */
 public class Return extends Effect {
 
+    public Return(String methodName, int lineNumber) {
+        super(methodName, lineNumber);
+    }
 }

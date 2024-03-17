@@ -6,7 +6,8 @@ package org.comprehensive.staticanalysis.effects;
 public class Modification extends Effect {
     private Field field;
 
-    public Modification(Field f) {
+    public Modification(String methodName, int lineNumber, Field f) {
+        super(methodName, lineNumber);
         this.field = f;
     }
 }
