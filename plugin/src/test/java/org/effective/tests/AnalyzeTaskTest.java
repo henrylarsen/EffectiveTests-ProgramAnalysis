@@ -1,4 +1,4 @@
-package org.comprehensive.staticanalysis;
+package org.effective.tests;
 
 import org.junit.jupiter.api.Test;
 

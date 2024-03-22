@@ -1,4 +1,4 @@
-package org.comprehensive.staticanalysis.effects;
+package org.effective.tests.effects;
 
 /**
  * A modification of a field in a class.

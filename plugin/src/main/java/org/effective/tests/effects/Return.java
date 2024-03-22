@@ -1,4 +1,4 @@
-package org.comprehensive.staticanalysis.effects;
+package org.effective.tests.effects;
 
 /**
  * An instance of a value being returned, unconcerned with the value itself.

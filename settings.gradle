@@ -7,5 +7,9 @@ pluginManagement {
 
 rootProject.name = 'Group9Project2'
 
-include('plugin', 'testproject', 'library')
+include('plugin', 'library')
 
+// This is what allows us to publish the plugin. It's very janky, but it works.
+if (!System.properties.containsKey('publishPlugin')) {
+    include('testproject')
+}

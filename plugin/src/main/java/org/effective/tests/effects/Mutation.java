@@ -1,4 +1,4 @@
-package org.comprehensive.staticanalysis.effects;
+package org.effective.tests.effects;
 
 /**
  * A mutation of any kind of object, including collections.

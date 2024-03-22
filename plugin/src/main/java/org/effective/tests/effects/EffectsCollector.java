@@ -1,4 +1,4 @@
-package org.comprehensive.staticanalysis.effects;
+package org.effective.tests.effects;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.visitor.GenericVisitorWithDefaults;
 import java.util.List;

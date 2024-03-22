@@ -1,4 +1,4 @@
-package org.comprehensive.staticanalysis.effects;
+package org.effective.tests.effects;
 
 /**
  * A simple representation of a field, unconcerned with its type.

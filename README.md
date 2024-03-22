@@ -1,4 +1,7 @@
-# Comprehensive Test Analysis
+# Effective Tests
+
+Our tool uses a combination of static analysis and source code injected dynamic analysis to create a stronger test
+coverage metric: checking that all side effects of class methods are covered by assertions.
 
 See checkins in CHECKINS.md for project progress.
 
@@ -19,7 +22,7 @@ needed it's probably easier for `plugin` to include `library` itself if possible
 This is a gradle plugin containing StaticAnalysisPlugin. To publish the StaticAnalysisPlugin, first consider incrementing the version in build.gradle, then run:
 
 ```shell
-./gradlew :plugin:publishToMavenLocal
+./gradlew -DpublishPlugin=true :plugin:publishToMavenLocal
 ```
 
 It can then be consumed by another gradle project (or test subproject) as long as it's looking in the maven local cache.

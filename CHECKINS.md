@@ -219,3 +219,32 @@ In light of this feedback, we have made the following changes to our design and 
 - Prioritize coverage of parameter mutation (as that was considered the most helpful by both study participants)
 - Discuss class-based vs. method-based coverage
 - Replace or explain the term “comprehensive”
+
+# Checkin 4
+
+## Status of Implementation So Far
+Most of the data structures / interfaces that we will need have been implemented at this point, meaning that we can 
+start on the functionality itself. In particular, the code that has to be injected into the source code has been 
+written, so now we can split into our sub-teams and write:
+- the code that actually does the injecting (including static analysis component)
+- the logic that runs within the injected code
+- the orchestration of the tool and its input/output
+
+We also had a discussion with Yanze this week about whether our analysis was control flow sensitive, and it was 
+determined it wasn't. Our solution is to perform CFS value agnostic static analysis on user's test code in order to
+statically determine what assert statements are checking the values of which getters. For 2 examples of cases this step
+must handle, [see this planned user study 2 task](testproject/src/test/java/user/study/TestMaxTracker2.java).
+
+## Plan for final user study
+We plan to run the user study with an MVP of our analysis tool on `testproject` within our repo. We will have a mix of 
+predictive and task driven questions in the study, 2 of which are already in the repository. We will 
+add more tasks as our implementation continues, and we develop questions about how edge cases should be handled, possible 
+usability improvements, and other concerns we want addressed by the study.
+
+[See planned user study tasks so far](testproject/src/test/java/user/study)
+
+## Planned timeline for remaining days
+Our planned timeline from Checkin 2 is still accurate. With our tasks assigned, we have a sprint until March 31st at 
+which point we should have an MVP and be performing user study 2.
+
+
