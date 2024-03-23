@@ -21,10 +21,6 @@ public abstract class Effect {
         this.lineNumber = lineNumber;
     }
 
-    public String toString() {
-        return this.methodName + ":" + this.lineNumber;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -37,6 +33,10 @@ public abstract class Effect {
     @Override
     public int hashCode() {
         return Objects.hash(methodName, lineNumber);
+    }
+
+    public String toString() {
+        return this.methodName + ":" + this.lineNumber;
     }
 
 }
