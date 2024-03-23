@@ -5,10 +5,25 @@ package org.effective.tests.effects;
  */
 public class Field {
     private String name;
-    private String className;
+    private boolean available;
 
-    public Field(String fieldName, String className) {
+    public Field(String fieldName) {
         this.name = fieldName;
-        this.className = className;
+        this.available = false;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailability(boolean b) {
+        available = b;
+    }
+
+    public String getName() {
+        return name;
+    }
+    public String toString() {
+        return this.name;
     }
 }

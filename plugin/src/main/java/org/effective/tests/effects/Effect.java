@@ -19,4 +19,8 @@ public abstract class Effect {
         this.lineNumber = lineNumber;
     }
 
+    public String toString() {
+        return this.methodName + ":" + this.lineNumber;
+    }
+
 }

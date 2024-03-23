@@ -10,4 +10,8 @@ public class Modification extends Effect {
         super(methodName, lineNumber);
         this.field = f;
     }
+
+    public String toString() {
+        return this.field.toString() + ":" + this.getLineNumber();
+    }
 }
