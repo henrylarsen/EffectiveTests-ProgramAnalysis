@@ -15,12 +15,12 @@ public class ProgramContext {
         fields = new HashSet();
     }
 
-    public Map<BlockStmtWrapper, List<Effect>> getEffects() {
+    public Map<BlockStmtWrapper, List<Effect>> getEffectMap() {
         return effects;
     }
 
     public void addEffect(BlockStmt block, Effect e) {
-        BlockStmtWrapper blockKey = new BlockStmtWrapper(block);
+        BlockStmtWrapper blockKey = new BlockStmtWrapper(block, block.getBegin().get().line);
         List ctxList = effects.get(blockKey);
         if (ctxList == null) {
             ctxList = new ArrayList<>();
@@ -48,6 +48,24 @@ public class ProgramContext {
 
     public void addField(Field f) {
         fields.add(f);
+    }
+
+    // For testing purposes
+    public boolean containsEffect(Effect e) {
+        for (Map.Entry<BlockStmtWrapper, List<Effect>> effectList : effects.entrySet()) {
+            if (effectList.getValue().contains(e)) {
+                return true;
+            }
+        };
+        return false;
+    }
+
+    public List<Effect> getAllEffects() {
+        List<Effect> allEffects = new ArrayList();
+        for (Map.Entry<BlockStmtWrapper, List<Effect>> entry : effects.entrySet()) {
+            allEffects.addAll(entry.getValue());
+        };
+        return allEffects;
     }
 
 }

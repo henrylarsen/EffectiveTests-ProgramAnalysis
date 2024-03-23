@@ -1,12 +1,14 @@
 package org.effective.tests.effects;
 
 
+import java.util.Objects;
+
 /**
  * A possible effect of a method.
  */
 public abstract class Effect {
-    private String methodName;
-    private int lineNumber;
+    protected String methodName;
+    protected int lineNumber;
 
     public String getMethodName() {
         return this.methodName;
@@ -21,6 +23,20 @@ public abstract class Effect {
 
     public String toString() {
         return this.methodName + ":" + this.lineNumber;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Effect effect = (Effect) o;
+        return lineNumber == effect.lineNumber &&
+                Objects.equals(methodName, effect.methodName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(methodName, lineNumber);
     }
 
 }
