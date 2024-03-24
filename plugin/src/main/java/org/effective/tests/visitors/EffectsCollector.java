@@ -57,6 +57,7 @@ public class EffectsCollector extends VoidVisitorAdapter<ProgramContext> {
         ctx.addEffect(block, e);
     }
 
+    @Override
     public void visit(final AssignExpr a, final ProgramContext ctx) {
         BlockStmt block = getParent(a, BlockStmt.class);
         MethodDeclaration method = getParent(block, MethodDeclaration.class);
