@@ -26,6 +26,7 @@ public class EffectContext {
         this.fields = Collections.unmodifiableSet(new HashSet<Field>());
     }
 
+    // TODO: filter for testable effects once structure is finalized
     public Map<BlockStmtWrapper, List<Effect>> getEffectMap() {
         return effects;
     }
