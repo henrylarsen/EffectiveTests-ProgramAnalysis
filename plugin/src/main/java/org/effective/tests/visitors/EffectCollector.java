@@ -9,6 +9,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.effective.tests.effects.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -23,10 +24,10 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         super();
     }
 
-    public List<Effect> collectEffects(Node n, final Set<Field> fields) {
+    public Map<BlockStmtWrapper, List<Effect>> collectEffects(Node n, final Set<Field> fields) {
         ctx = new EffectContext(fields);
         n.accept(this, ctx);
-        return ctx.getAllTestableEffects();
+        return ctx.getEffectMap();
     }
 
     @Override
@@ -72,9 +73,13 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         return ctx.getAllEffects();
     }
 
+    public List<Effect> getAllTestableEffects() {
+        return ctx.getAllTestableEffects();
+    }
+
     /**
      * @return The collector's EffectContext.
-     * <b>Note:</b> should not be used as a direct API. Effects are accessible through collectEffects() and getAllEffects()
+     * <b>Note:</b> should not be used as a direct API. Effects are accessible through other methods.
      */
     public EffectContext getCtx() {
         return ctx;
