@@ -27,6 +27,11 @@ public class EffectCollector extends NodeVisitor<ProgramContext> {
         String methodName = method.getNameAsString();
         Expression exp = rs.getExpression().orElse(null);
 
+        // Return statements with no value should not be registered as effects
+        if (exp == null) {
+            return;
+        }
+
         if (exp instanceof NameExpr) {
             String fieldName = exp.asNameExpr().getNameAsString();
             Field f = ctx.getField(fieldName);
