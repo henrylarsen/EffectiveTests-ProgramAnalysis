@@ -10,4 +10,8 @@ public class Return {
         return x;
     }
 
+    public void getNothing() {
+        return;
+    }
+
 }

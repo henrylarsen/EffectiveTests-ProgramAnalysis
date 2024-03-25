@@ -1,23 +1,33 @@
 package org.effective.tests.visitors;
 
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.effective.tests.effects.*;
 
-import java.util.Set;
+import java.util.List;
 
-public class EffectCollector extends NodeVisitor<ProgramContext> {
+/**
+ * Collects the effects within a JavaParser AST.
+ * No restrictions on a starting node are given; any node should function as an entry point.
+ * Effects are stored in and accessible from the ProgramContext object.
+ */
+public class EffectCollector extends NodeVisitor<EffectContext> {
 
     public EffectCollector() {
         super();
     }
 
+    public List<Effect> collectEffects(Node n, final EffectContext ctx) {
+        n.accept(this, ctx);
+        return ctx.getAllTestableEffects();
+    }
+
     @Override
-    public void visit(final ReturnStmt rs, final ProgramContext ctx) {
+    public void visit(final ReturnStmt rs, final EffectContext ctx) {
         BlockStmt block = getParent(rs, BlockStmt.class);
         MethodDeclaration method = getParent(block, MethodDeclaration.class);
         if (method == null) {
@@ -32,19 +42,11 @@ public class EffectCollector extends NodeVisitor<ProgramContext> {
             return;
         }
 
-        if (exp instanceof NameExpr) {
-            String fieldName = exp.asNameExpr().getNameAsString();
-            Field f = ctx.getField(fieldName);
-            if (f != null) {
-                f.setAvailability(true);
-            }
-        }
-
         Effect e = new Return(methodName, rs.getBegin().get().line);
         ctx.addEffect(block, e);
     }
 
-    public void visit(final AssignExpr a, final ProgramContext ctx) {
+    public void visit(final AssignExpr a, final EffectContext ctx) {
         BlockStmt block = getParent(a, BlockStmt.class);
         MethodDeclaration method = getParent(block, MethodDeclaration.class);
 
@@ -56,12 +58,10 @@ public class EffectCollector extends NodeVisitor<ProgramContext> {
         String methodName = method.getNameAsString();
         Field f = ctx.getField(a.getTarget().toString());
 
-        // Only register modifications of publicly available fields
-        if ( f != null && f.isAvailable() ) {
+        if (f != null) {
             Effect e = new Modification(methodName, a.getBegin().get().line, f);
             ctx.addEffect(block, e);
         }
-
     }
 
 }

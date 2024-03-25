@@ -8,10 +8,14 @@ import java.util.Objects;
 public class Field {
     private String name;
     private boolean available;
-
     public Field(String fieldName) {
         this.name = fieldName;
         this.available = false;
+    }
+
+    public Field(String fieldName, boolean available) {
+        this.name = fieldName;
+        this.available = available;
     }
 
     public boolean isAvailable() {

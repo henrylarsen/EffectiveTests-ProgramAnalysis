@@ -9,7 +9,7 @@ public class Modification extends Effect {
     private Field field;
 
     public Modification(String methodName, int lineNumber, Field f) {
-        super(methodName, lineNumber);
+        super(methodName, lineNumber, f.isAvailable());
         this.field = f;
     }
 

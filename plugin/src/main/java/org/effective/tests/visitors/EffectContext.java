@@ -7,12 +7,23 @@ import org.effective.tests.effects.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ProgramContext {
+public class EffectContext {
     private Map<BlockStmtWrapper, List<Effect>> effects;
     private final Set<Field> fields;
-    public ProgramContext(Set<Field> fields) {
+
+    /**
+     * Context class for an EffectCollector.
+     * @param fields list of all fields within that method;
+     * necessary to determine whether an effect is testable.
+     */
+    public EffectContext(Set<Field> fields) {
         effects = new HashMap();
         this.fields = Collections.unmodifiableSet(fields);
+    }
+
+    public EffectContext() {
+        effects = new HashMap();
+        this.fields = Collections.unmodifiableSet(new HashSet<Field>());
     }
 
     public Map<BlockStmtWrapper, List<Effect>> getEffectMap() {
@@ -42,26 +53,16 @@ public class ProgramContext {
         return fields;
     }
 
-    public Set<Field> getAvailableFields() {
-        return fields.stream().filter(field -> field.isAvailable()).collect(Collectors.toSet());
-    }
-
-    // For testing purposes
-    public boolean containsEffect(Effect e) {
-        for (Map.Entry<BlockStmtWrapper, List<Effect>> effectList : effects.entrySet()) {
-            if (effectList.getValue().contains(e)) {
-                return true;
-            }
-        };
-        return false;
-    }
-
     public List<Effect> getAllEffects() {
         List<Effect> allEffects = new ArrayList();
         for (Map.Entry<BlockStmtWrapper, List<Effect>> entry : effects.entrySet()) {
             allEffects.addAll(entry.getValue());
         };
         return allEffects;
+    }
+
+    public List<Effect> getAllTestableEffects() {
+        return getAllEffects().stream().filter(e -> e.isTestable()).collect(Collectors.toList());
     }
 
 }

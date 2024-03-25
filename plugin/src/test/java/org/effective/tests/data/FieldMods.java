@@ -30,7 +30,7 @@ public class FieldMods {
         }
     }
 
-    // Should not be added as an effect because b has no getter
+    // Should not be added as a testable effect because b has no getter
     public void setB(int x) {
         b = x;
     }

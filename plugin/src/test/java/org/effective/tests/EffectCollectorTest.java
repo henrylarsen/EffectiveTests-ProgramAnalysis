@@ -2,21 +2,22 @@ package org.effective.tests;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.visitor.VoidVisitor;
 
+import org.effective.tests.effects.Effect;
 import org.effective.tests.effects.Field;
 import org.effective.tests.effects.Modification;
 import org.effective.tests.effects.Return;
 import org.effective.tests.visitors.FieldCollector;
-import org.effective.tests.visitors.ProgramContext;
+import org.effective.tests.visitors.EffectContext;
 import org.effective.tests.visitors.EffectCollector;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,33 +25,39 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EffectCollectorTest {
 
     private static final String DIR_PATH = "src/test/java/org/effective/tests/data";
-    private ProgramContext ctx;
     private FieldCollector fieldCollector;
-    private EffectCollector effectCollector;
+    private static EffectCollector effectCollector;
+    private Set<Field> fields;
+    private EffectContext ctx;
+
+
+    @BeforeAll
+    static void setUp() {
+        effectCollector = new EffectCollector();
+    }
 
     private CompilationUnit getUnit(String fileName) throws IOException {
         return StaticJavaParser.parse(Files.newInputStream(Paths.get(DIR_PATH + fileName)));
     }
 
-    @BeforeEach
-    void setUp() {
+    private EffectContext collectFields(CompilationUnit cu) {
         fieldCollector = new FieldCollector();
-        //ctx = new ProgramContext();
-        //effectCollector = new EffectCollector(paFields);
-    }
-
-    Set<Field> collectFields(CompilationUnit cu) {
-        return cu.accept(fieldCollector);
+        fields = fieldCollector.collectFields(cu);
+        ctx = new EffectContext(fields);
+        effectCollector = new EffectCollector();
+        effectCollector.collectEffects(cu, ctx);
+        return ctx;
     }
 
     @Test
     void singleReturnStmt() {
         try {
             CompilationUnit cu = getUnit("/Return.java");
+            ctx = collectFields(cu);
 
-            cu.accept(effectCollector, ctx);
-            assertEquals(ctx.getEffectMap().size(), 1);
-            assertTrue(ctx.containsEffect(new Return("getX", 10)));
+            List<Effect> testableEffects = ctx.getAllTestableEffects();
+            assertEquals(ctx.getAllEffects().size(), 1);
+            assertTrue(testableEffects.contains(new Return("getX", 10)));
 
         } catch (IOException e) {
             fail(e);
@@ -61,23 +68,24 @@ public class EffectCollectorTest {
     void setField() {
         try {
             CompilationUnit cu = getUnit("/FieldMods.java");
-            cu.accept(effectCollector, ctx);
+            ctx = collectFields(cu);
 
-            assertEquals(ctx.getEffectMap().size(), 4);
-            assertEquals(ctx.getAllEffects().size(), 5);
+            List<Effect> testableEffects = ctx.getAllTestableEffects();
+            assertEquals(ctx.getAllEffects().size(), 7);
+            assertEquals(testableEffects.size(), 5);
 
-            Field a = new Field("a");
+            Field a = new Field("a", true);
             Field b = new Field("b");
-            Field c = new Field("c");
+            Field c = new Field("c", true);
 
-            assertTrue(ctx.containsEffect(new Return("getA", 13)));
-            assertTrue(ctx.containsEffect(new Return("getC", 17)));
-            assertTrue(ctx.containsEffect(new Modification("setA", 21, a)));
-            assertTrue(ctx.containsEffect(new Modification("foo", 26, a)));
-            assertTrue(ctx.containsEffect(new Modification("foo", 27, c)));
+            assertTrue(testableEffects.contains(new Return("getA", 13)));
+            assertTrue(testableEffects.contains(new Return("getC", 17)));
+            assertTrue(testableEffects.contains(new Modification("setA", 21, a)));
+            assertTrue(testableEffects.contains(new Modification("foo", 26, a)));
+            assertTrue(testableEffects.contains(new Modification("foo", 27, c)));
 
-            assertFalse(ctx.containsEffect(new Modification("setB", 34, b)));
-            assertFalse(ctx.containsEffect(new Modification("foo", 29, b)));
+            assertFalse(testableEffects.contains(new Modification("setB", 34, b)));
+            assertFalse(testableEffects.contains(new Modification("foo", 29, b)));
 
             assertTrue(ctx.getFields().size() == 3);
             assertTrue(ctx.getField("a").isAvailable());
