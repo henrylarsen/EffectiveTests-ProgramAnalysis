@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 
 public class ProgramContext {
     private Map<BlockStmtWrapper, List<Effect>> effects;
-    private Set<Field> fields;
-    public ProgramContext() {
+    private final Set<Field> fields;
+    public ProgramContext(Set<Field> fields) {
         effects = new HashMap();
-        fields = new HashSet();
+        this.fields = Collections.unmodifiableSet(fields);
     }
 
     public Map<BlockStmtWrapper, List<Effect>> getEffectMap() {
@@ -44,10 +44,6 @@ public class ProgramContext {
 
     public Set<Field> getAvailableFields() {
         return fields.stream().filter(field -> field.isAvailable()).collect(Collectors.toSet());
-    }
-
-    public void addField(Field f) {
-        fields.add(f);
     }
 
     // For testing purposes

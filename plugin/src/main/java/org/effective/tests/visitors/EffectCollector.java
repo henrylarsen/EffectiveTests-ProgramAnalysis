@@ -1,37 +1,19 @@
 package org.effective.tests.visitors;
 
-import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.effective.tests.effects.*;
 
-import java.util.List;
+import java.util.Set;
 
-public class EffectsCollector extends VoidVisitorAdapter<ProgramContext> {
+public class EffectCollector extends NodeVisitor<ProgramContext> {
 
-    public EffectsCollector() {
+    public EffectCollector() {
         super();
-    }
-
-    @Override
-    public void visit(final FieldDeclaration fd, final ProgramContext ctx) {
-        List<Modifier> modifiers = fd.getModifiers();
-        for ( VariableDeclarator v : fd.getVariables() ) {
-            Field f = new Field(v.getNameAsString());
-            if (modifiers.contains(Modifier.publicModifier())) {
-                f.setAvailability(true);
-            }
-            ctx.addField(f);
-        }
-
     }
 
     @Override
@@ -75,21 +57,6 @@ public class EffectsCollector extends VoidVisitorAdapter<ProgramContext> {
             ctx.addEffect(block, e);
         }
 
-    }
-
-    private <T extends Node> T getParent(Node n, Class<T> parentClass) {
-        if (n == null) {
-            return null;
-        }
-
-        Node ancestor = n.getParentNode().orElse(null);
-
-        if (ancestor == null) {
-            return null;
-        } else if (parentClass.isInstance(ancestor)) {
-            return (T) ancestor;
-        }
-        return getParent(ancestor, parentClass);
     }
 
 }

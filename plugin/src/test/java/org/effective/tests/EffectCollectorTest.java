@@ -7,8 +7,9 @@ import com.github.javaparser.ast.visitor.VoidVisitor;
 import org.effective.tests.effects.Field;
 import org.effective.tests.effects.Modification;
 import org.effective.tests.effects.Return;
+import org.effective.tests.visitors.FieldCollector;
 import org.effective.tests.visitors.ProgramContext;
-import org.effective.tests.visitors.EffectsCollector;
+import org.effective.tests.visitors.EffectCollector;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,14 +17,16 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class EffectsCollectorTest {
+public class EffectCollectorTest {
 
     private static final String DIR_PATH = "src/test/java/org/effective/tests/data";
     private ProgramContext ctx;
-    private VoidVisitor<ProgramContext> v;
+    private FieldCollector fieldCollector;
+    private EffectCollector effectCollector;
 
     private CompilationUnit getUnit(String fileName) throws IOException {
         return StaticJavaParser.parse(Files.newInputStream(Paths.get(DIR_PATH + fileName)));
@@ -31,15 +34,21 @@ public class EffectsCollectorTest {
 
     @BeforeEach
     void setUp() {
-        ctx = new ProgramContext();
-        v = new EffectsCollector();
+        fieldCollector = new FieldCollector();
+        //ctx = new ProgramContext();
+        //effectCollector = new EffectCollector(paFields);
+    }
+
+    Set<Field> collectFields(CompilationUnit cu) {
+        return cu.accept(fieldCollector);
     }
 
     @Test
     void singleReturnStmt() {
         try {
             CompilationUnit cu = getUnit("/Return.java");
-            cu.accept(v, ctx);
+
+            cu.accept(effectCollector, ctx);
             assertEquals(ctx.getEffectMap().size(), 1);
             assertTrue(ctx.containsEffect(new Return("getX", 10)));
 
@@ -52,7 +61,7 @@ public class EffectsCollectorTest {
     void setField() {
         try {
             CompilationUnit cu = getUnit("/FieldMods.java");
-            cu.accept(v, ctx);
+            cu.accept(effectCollector, ctx);
 
             assertEquals(ctx.getEffectMap().size(), 4);
             assertEquals(ctx.getAllEffects().size(), 5);
