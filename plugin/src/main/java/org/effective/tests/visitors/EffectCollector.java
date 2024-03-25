@@ -9,6 +9,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.effective.tests.effects.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Collects the effects within a JavaParser AST.
@@ -16,12 +17,14 @@ import java.util.List;
  * Effects are stored in and accessible from the ProgramContext object.
  */
 public class EffectCollector extends NodeVisitor<EffectContext> {
+    EffectContext ctx;
 
     public EffectCollector() {
         super();
     }
 
-    public List<Effect> collectEffects(Node n, final EffectContext ctx) {
+    public List<Effect> collectEffects(Node n, final Set<Field> fields) {
+        ctx = new EffectContext(fields);
         n.accept(this, ctx);
         return ctx.getAllTestableEffects();
     }
@@ -63,6 +66,18 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
             Effect e = new Modification(methodName, a.getBegin().get().line, f);
             ctx.addEffect(block, e);
         }
+    }
+
+    public List<Effect> getAllEffects() {
+        return ctx.getAllEffects();
+    }
+
+    /**
+     * @return The collector's EffectContext.
+     * <b>Note:</b> should not be used as a direct API. Effects are accessible through collectEffects() and getAllEffects()
+     */
+    public EffectContext getCtx() {
+        return ctx;
     }
 
 }

@@ -43,10 +43,9 @@ public class EffectCollectorTest {
     private EffectContext collectFields(CompilationUnit cu) {
         fieldCollector = new FieldCollector();
         fields = fieldCollector.collectFields(cu);
-        ctx = new EffectContext(fields);
         effectCollector = new EffectCollector();
-        effectCollector.collectEffects(cu, ctx);
-        return ctx;
+        effectCollector.collectEffects(cu, fields);
+        return effectCollector.getCtx();
     }
 
     @Test

@@ -83,10 +83,9 @@ public class FieldCollector extends NodeVisitor<Set<Field>> {
     }
 
     private boolean isGetter(MethodDeclaration method, Set<Field> fields) {
-        EffectContext ctx = new EffectContext(fields);
         EffectCollector ec = new EffectCollector();
-        ec.collectEffects(method, ctx);
-        return (ctx.getAllEffects().size() == 1);
+        ec.collectEffects(method, fields);
+        return (ec.getAllEffects().size() == 1);
     }
 
 }
