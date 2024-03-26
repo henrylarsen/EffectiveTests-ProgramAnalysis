@@ -6,6 +6,7 @@ import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.utils.Pair;
 import org.effective.tests.effects.*;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         super();
     }
 
-    public Map<BlockStmtWrapper, List<Effect>> collectEffects(Node n, final Set<Field> fields) {
+    public Map<Pair<String, Integer>, List<Effect>> collectEffects(Node n, final Set<Field> fields) {
         ctx = new EffectContext(fields);
         n.accept(this, ctx);
         return ctx.getEffectMap();
@@ -39,6 +40,7 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         }
 
         String methodName = method.getNameAsString();
+        int methodLine = method.getBegin().get().line;
         Expression exp = rs.getExpression().orElse(null);
 
         // Return statements with no value should not be registered as effects
@@ -47,7 +49,7 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         }
 
         Effect e = new Return(methodName, rs.getBegin().get().line);
-        ctx.addEffect(block, e);
+        ctx.addEffect(methodName, methodLine, e);
     }
 
     @Override
@@ -61,11 +63,12 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         }
 
         String methodName = method.getNameAsString();
+        int methodLine = method.getBegin().get().line;
         Field f = ctx.getField(a.getTarget().toString());
 
         if (f != null) {
             Effect e = new Modification(methodName, a.getBegin().get().line, f);
-            ctx.addEffect(block, e);
+            ctx.addEffect(methodName, methodLine, e);
         }
     }
 

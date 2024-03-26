@@ -3,6 +3,7 @@ package org.effective.tests;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 
+import com.github.javaparser.utils.Pair;
 import org.effective.tests.effects.Effect;
 import org.effective.tests.effects.Field;
 import org.effective.tests.effects.Modification;
@@ -17,7 +18,9 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,6 +58,7 @@ public class EffectCollectorTest {
             ctx = collectFields(cu);
 
             List<Effect> testableEffects = ctx.getAllTestableEffects();
+            assertEquals(ctx.getEffectMap().size(), 1);
             assertEquals(ctx.getAllEffects().size(), 1);
             assertTrue(testableEffects.contains(new Return("getX", 10)));
 
@@ -91,6 +95,24 @@ public class EffectCollectorTest {
             assertFalse(ctx.getField("b").isAvailable());
             assertTrue(ctx.getField("c").isAvailable());
 
+        } catch (IOException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void effectMap() {
+        try {
+            CompilationUnit cu = getUnit("/FieldMods.java");
+            ctx = collectFields(cu);
+
+            Map<Pair<String, Integer>, List<Effect>> effectMap = ctx.getEffectMap();
+            assertEquals(effectMap.size(), 4);
+            assertTrue(effectMap.containsKey(new Pair("getA", 12)));
+            assertTrue(effectMap.containsKey(new Pair("getC", 16)));
+            assertTrue(effectMap.containsKey(new Pair("setA", 20)));
+            assertTrue(effectMap.containsKey(new Pair("foo", 24)));
+            assertFalse(effectMap.containsKey(new Pair("setB", 34)));
         } catch (IOException e) {
             fail(e);
         }
