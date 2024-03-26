@@ -1,7 +1,5 @@
 package org.effective.tests.visitors;
 
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.utils.Pair;
 import org.effective.tests.effects.Effect;
 import org.effective.tests.effects.Field;
@@ -11,21 +9,16 @@ import java.util.stream.Collectors;
 
 public class EffectContext {
     private Map<Pair<String, Integer>, List<Effect>> effects;
-    private final Set<Field> fields;
+    private VarContext vCtx;
 
     /**
      * Context class for an EffectCollector.
-     * @param fields list of all fields within that method;
+     * @param vars VarContext instance with a list of all class fields and local variables for that method;
      * necessary to determine whether an effect is testable.
      */
-    public EffectContext(Set<Field> fields) {
-        effects = new HashMap();
-        this.fields = Collections.unmodifiableSet(fields);
-    }
-
-    public EffectContext() {
-        effects = new HashMap();
-        this.fields = Collections.unmodifiableSet(new HashSet<>());
+    public EffectContext(VarContext vars) {
+        this.effects = new HashMap();
+        this.vCtx = vars;
     }
 
     public Map<Pair<String, Integer>, List<Effect>> getEffectMap() {
@@ -53,7 +46,7 @@ public class EffectContext {
     }
 
     public Field getField(String name) {
-        for (Field f : fields) {
+        for (Field f : vCtx.getFields()) {
             if (f.getName().equals(name)) {
                 return f;
             }
@@ -62,7 +55,7 @@ public class EffectContext {
     }
 
     public Set<Field> getFields() {
-        return fields;
+        return vCtx.getFields();
     }
 
     public List<Effect> getAllEffects() {
@@ -81,4 +74,12 @@ public class EffectContext {
         return effects.stream().filter(e -> e.isTestable()).collect(Collectors.toList());
     }
 
+    public List<String> getLocalVariables(String methodName, int methodLine) {
+        return vCtx.getLocalVariables(methodName, methodLine);
+    }
+
+    public boolean isLocalVariable(String methodName, int methodLine, String fieldName) {
+        List<String> locals = getLocalVariables(methodName, methodLine);
+        return locals != null && locals.contains(fieldName);
+    }
 }
