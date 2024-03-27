@@ -15,9 +15,6 @@ root
 └── testproject
 ```
 
-It's possible we'll also want a `shared` project for our library and plugin to have a common interface, but if this is
-needed it's probably easier for `plugin` to include `library` itself if possible
-
 ### Plugin
 This is a gradle plugin containing StaticAnalysisPlugin. To publish the StaticAnalysisPlugin, first consider incrementing the version in build.gradle, then run:
 
@@ -29,7 +26,7 @@ It can then be consumed by another gradle project (or test subproject) as long a
 
 ```groovy
 plugins {
-    id 'org.comprehensive.analysis' version '1.0-SNAPSHOT'
+    id 'org.effective.tests' version '1.0-SNAPSHOT'
 }
 ```
 
@@ -41,5 +38,11 @@ This project is set up to include our plugin for testing. Once you've published 
 in library/build.gradle and run
 
 ``` shell
-./gradlew :testproject:analyze
+./gradlew :testproject:test
 ```
+
+This will:
+1. Run static analysis on your src and test code to determine where to inject code for dynamic analysis purposes
+2. Place the injected code in `build/injectedSrc/`
+3. Run the rest of compilation with `build/injectedSrc/` as the source set
+4. (Todo) Output the results of the dynamic analysis from the ran test command

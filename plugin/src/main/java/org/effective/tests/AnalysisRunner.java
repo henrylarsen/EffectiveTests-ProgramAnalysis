@@ -1,10 +1,66 @@
 package org.effective.tests;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.stream.Stream;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 public class AnalysisRunner {
 
-    public String run() {
+    public String run(String sourcePath, String targetPath) {
         System.out.println("Starting analysis...");
-        // TODO: Add logic here. Reason is this is a concrete class and so is much more easily tested
+        prepareAnalysisDirectory(sourcePath, targetPath);
+        // TODO: Complete this rough outline of steps:
+
+        // Crawl targetPath to collect annotated test files and their files under test that need injection
+
+        // For each file under test, analyze code for effects and perform injections accordingly
+
+        // For each test file, analyze code for effect assertions and perform injections accordingly
+
+        // Inject code to produce results, likely as an afterAll of some sort
+
         return "ran";
+    }
+
+    private void prepareAnalysisDirectory(String sourcePath, String targetPath) {
+        try {
+            // Source: https://stackoverflow.com/questions/29076439/java-8-copy-directory-recursively
+            Path target = Paths.get(targetPath);
+            Path source = Paths.get(sourcePath);
+            if (Files.exists(target)) {
+                Files.walk(target)
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            } else {
+                Files.createDirectories(target);
+            }
+            copyFolder(
+                    source,
+                    target
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private void copyFolder(Path src, Path dest) throws IOException {
+        try (Stream<Path> stream = Files.walk(src)) {
+            stream.forEach(source -> copy(source, dest.resolve(src.relativize(source))));
+        }
+    }
+
+    private void copy(Path source, Path dest) {
+        try {
+            Files.copy(source, dest, REPLACE_EXISTING);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 }

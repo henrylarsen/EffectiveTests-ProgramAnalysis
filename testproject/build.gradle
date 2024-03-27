@@ -6,12 +6,17 @@
  */
 
 plugins {
-    id 'org.effective.tests' version '1.4-SNAPSHOT'
+    id 'org.effective.tests' version '1.5-SNAPSHOT'
     id 'java'
 }
 
 repositories {
     mavenCentral()
+}
+
+java {
+    sourceCompatibility = 20
+    targetCompatibility = 20
 }
 
 dependencies {

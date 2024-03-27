@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'org.effective.tests'
-version '1.0-SNAPSHOT'
+version '1.3-SNAPSHOT'
 
 repositories {
     mavenLocal()
@@ -20,7 +20,10 @@ test {
     useJUnitPlatform()
 }
 
-
+java {
+    sourceCompatibility = 20
+    targetCompatibility = 20
+}
 
 publishing {
     publications {
