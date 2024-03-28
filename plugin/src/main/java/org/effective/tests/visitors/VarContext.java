@@ -18,6 +18,15 @@ public class VarContext {
         return fields;
     }
 
+    public Field getField(String name) {
+        for (Field f : fields) {
+            if (f.getName().equals(name)) {
+                return f;
+            }
+        }
+        return null;
+    }
+
     public Map<Pair<String, Integer>, List<String>> getLocalVars() {
         return localVars;
     }

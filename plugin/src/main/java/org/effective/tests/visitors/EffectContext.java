@@ -46,12 +46,7 @@ public class EffectContext {
     }
 
     public Field getField(String name) {
-        for (Field f : vCtx.getFields()) {
-            if (f.getName().equals(name)) {
-                return f;
-            }
-        }
-        return null;
+        return vCtx.getField(name);
     }
 
     public Set<Field> getFields() {

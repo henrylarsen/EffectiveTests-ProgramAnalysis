@@ -28,6 +28,16 @@ public abstract class NodeVisitor<U> extends VoidVisitorAdapter<U> {
         return getParent(ancestor, parentClass);
     }
 
+    protected int getLineNumber(Node n) {
+        return n.getBegin().get().line;
+    }
+
+    /**
+     *
+     * @param m the method to be evaluated
+     * @param ctx a VarContext instance
+     * @return
+     */
     protected String isGetter(MethodDeclaration m, VarContext ctx) {
         List<Node> nodesWithEffects = getEffects(m);
         if (nodesWithEffects.size() == 1) {
@@ -37,13 +47,21 @@ public abstract class NodeVisitor<U> extends VoidVisitorAdapter<U> {
                 Expression expr = ret.getExpression().orElse(null);
                 if (expr instanceof NameExpr) {
                     String fieldName = ((NameExpr) expr).getNameAsString();
-                    if (!ctx.isLocalVariable(m.getNameAsString(), getLineNumber(m), fieldName)) {
+                    if (isClassField(m, fieldName, ctx)) {
                         return ((NameExpr) expr).getNameAsString();
                     }
                 }
             }
         }
         return null;
+    }
+
+    /**
+     * Returns whether a field name is a class field and not a local variable.
+     */
+    private boolean isClassField(MethodDeclaration m, String fieldName, VarContext ctx) {
+        return ctx.getField(fieldName) != null &&
+                !ctx.isLocalVariable(m.getNameAsString(), getLineNumber(m), fieldName);
     }
 
     private List<Node> getEffects(Node n) {
@@ -57,7 +75,4 @@ public abstract class NodeVisitor<U> extends VoidVisitorAdapter<U> {
         return nodesWithEffects;
     }
 
-    protected int getLineNumber(Node n) {
-        return n.getBegin().get().line;
-    }
 }
