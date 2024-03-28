@@ -74,12 +74,7 @@ public class EffectContext {
         return effects.stream().filter(e -> e.isTestable()).collect(Collectors.toList());
     }
 
-    public List<String> getLocalVariables(String methodName, int methodLine) {
-        return vCtx.getLocalVariables(methodName, methodLine);
-    }
-
-    public boolean isLocalVariable(String methodName, int methodLine, String fieldName) {
-        List<String> locals = getLocalVariables(methodName, methodLine);
-        return locals != null && locals.contains(fieldName);
+    public VarContext getVarCtx() {
+        return vCtx;
     }
 }
