@@ -33,10 +33,10 @@ public abstract class NodeVisitor<U> extends VoidVisitorAdapter<U> {
     }
 
     /**
-     *
+     * Determines if a method is a getter, and if so, returns the name of the returned field.
      * @param m the method to be evaluated
-     * @param ctx a VarContext instance
-     * @return
+     * @param ctx the VarContext for the class
+     * @return the field name if the method is a getter; else, null
      */
     protected String isGetter(MethodDeclaration m, VarContext ctx) {
         List<Node> nodesWithEffects = getEffects(m);
