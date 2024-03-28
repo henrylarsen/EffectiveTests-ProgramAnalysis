@@ -43,7 +43,7 @@ public class VarCollector extends NodeVisitor<VarContext> {
     public void visit(final VariableDeclarationExpr vd, final VarContext vars) {
         MethodDeclaration method = getParent(vd, MethodDeclaration.class);
         String methodName = method.getNameAsString();
-        int methodLine = method.getBegin().get().line;
+        int methodLine = getLineNumber(method);
         List<String> variableNames = vd.getVariables().stream().map(v -> v.getNameAsString()).collect(Collectors.toList());
         vars.addLocalVariables(methodName, methodLine, variableNames);
     }

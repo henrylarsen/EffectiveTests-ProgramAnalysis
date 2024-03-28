@@ -37,7 +37,7 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         }
 
         String methodName = method.getNameAsString();
-        int methodLine = method.getBegin().get().line;
+        int methodLine = getLineNumber(method);
         Expression exp = rs.getExpression().orElse(null);
 
         // Return statements with no value should not be registered as effects
@@ -46,7 +46,7 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         }
 
         Effect e;
-        int returnLine = rs.getBegin().get().line;
+        int returnLine = getLineNumber(rs);
         String fieldName = isGetter(method, ctx.getVarCtx());
         if (fieldName != null) {
             e = new Getter(methodName, returnLine, fieldName);
@@ -66,7 +66,7 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         }
 
         String methodName = method.getNameAsString();
-        int methodLine = method.getBegin().get().line;
+        int methodLine = getLineNumber(method);
         String fieldName = a.getTarget().toString();
         Field f = ctx.getField(fieldName);
 
