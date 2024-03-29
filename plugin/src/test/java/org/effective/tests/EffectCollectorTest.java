@@ -3,6 +3,8 @@ package org.effective.tests;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.github.javaparser.utils.Pair;
 import org.effective.tests.effects.*;
 import org.effective.tests.visitors.VarCollector;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +39,7 @@ public class EffectCollectorTest {
     }
 
     private CompilationUnit getUnit(String fileName) throws IOException {
+        StaticJavaParser.getConfiguration().setSymbolResolver(new JavaSymbolSolver(new ReflectionTypeSolver()));
         return StaticJavaParser.parse(Files.newInputStream(Paths.get(DIR_PATH + fileName)));
     }
 
@@ -102,13 +106,13 @@ public class EffectCollectorTest {
             CompilationUnit cu = getUnit("/FieldMods.java");
             ctx = collectFields(cu);
 
-            Map<Pair<String, Integer>, List<Effect>> effectMap = ctx.getEffectMap();
+            Map<MethodData, List<Effect>> effectMap = ctx.getEffectMap();
             assertEquals(effectMap.size(), 4);
-            assertTrue(effectMap.containsKey(new Pair("getA", 12)));
-            assertTrue(effectMap.containsKey(new Pair("getC", 16)));
-            assertTrue(effectMap.containsKey(new Pair("setA", 20)));
-            assertTrue(effectMap.containsKey(new Pair("foo", 24)));
-            assertFalse(effectMap.containsKey(new Pair("setB", 34)));
+            assertTrue(effectMap.containsKey(new MethodData("getA", new ArrayList<>(), 12)));
+            assertTrue(effectMap.containsKey(new MethodData("getC", new ArrayList<>(), 16)));
+            assertTrue(effectMap.containsKey(new MethodData("setA", new ArrayList<>(List.of("int")), 20)));
+            assertTrue(effectMap.containsKey(new MethodData("foo", new ArrayList<>(List.of("int")), 24)));
+            assertFalse(effectMap.containsKey(new MethodData("setB", new ArrayList<>(List.of("int")), 34)));
         } catch (IOException e) {
             fail(e);
         }

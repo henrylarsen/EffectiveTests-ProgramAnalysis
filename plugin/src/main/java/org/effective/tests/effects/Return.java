@@ -19,5 +19,4 @@ public class Return extends Effect {
         return this.lineNumber == ret.getLineNumber() &&
                 Objects.equals(this.methodName, ret.getMethodName());
     }
-
 }

@@ -8,7 +8,7 @@ import java.util.Objects;
  * The <i>testable</i> property indicates whether an effect is testable.
  * Test suite analysis should only be concerned with testable effects.
  */
-public abstract class Effect {
+public abstract class Effect implements Comparable<Effect>{
     protected String methodName;
     protected int lineNumber;
     protected boolean testable;
@@ -51,6 +51,11 @@ public abstract class Effect {
 
     public String toString() {
         return this.methodName + ":" + this.lineNumber;
+    }
+
+    @Override
+    public int compareTo(Effect e) {
+        return Integer.compare(this.lineNumber, e.lineNumber);
     }
 
 }

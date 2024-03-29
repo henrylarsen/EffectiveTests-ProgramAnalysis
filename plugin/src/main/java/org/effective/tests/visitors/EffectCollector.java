@@ -8,6 +8,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.utils.Pair;
 import org.effective.tests.effects.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         super();
     }
 
-    public Map<Pair<String, Integer>, List<Effect>> collectEffects(Node n, final VarContext vars) {
+    public Map<MethodData, List<Effect>> collectEffects(Node n, final VarContext vars) {
         ctx = new EffectContext(vars);
         n.accept(this, ctx);
         return ctx.getEffectMap();
@@ -37,6 +38,10 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         }
 
         String methodName = method.getNameAsString();
+        List<String> paramTypes = new ArrayList<>();
+        method.getParameters().forEach(param -> {
+            paramTypes.add(param.getType().toString());
+        });
         int methodLine = getLineNumber(method);
         Expression exp = rs.getExpression().orElse(null);
 
@@ -53,7 +58,7 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         } else {
             e = new Return(methodName, returnLine);
         }
-        ctx.addEffect(methodName, methodLine, e);
+        ctx.addEffect(methodName, paramTypes, methodLine, e);
     }
 
     @Override
@@ -66,13 +71,18 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         }
 
         String methodName = method.getNameAsString();
+        List<String> paramTypes = new ArrayList<>();
+        method.getParameters().forEach(param -> {
+            paramTypes.add(param.getType().toString());
+        });
         int methodLine = getLineNumber(method);
+
         String fieldName = a.getTarget().toString();
         Field f = ctx.getField(fieldName);
 
         if (f != null && !ctx.getVarCtx().isLocalVariable(methodName, methodLine, fieldName)) {
             Effect e = new Modification(methodName, getLineNumber(a), f);
-            ctx.addEffect(methodName, methodLine, e);
+            ctx.addEffect(methodName, paramTypes, methodLine, e);
         }
     }
 

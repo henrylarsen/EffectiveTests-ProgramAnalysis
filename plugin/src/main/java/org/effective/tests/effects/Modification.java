@@ -13,6 +13,7 @@ public class Modification extends Effect {
         this.field = f;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -28,6 +29,10 @@ public class Modification extends Effect {
     }
 
     public String toString() {
-        return this.field.toString() + ":" + this.getLineNumber();
+        return this.field.toString() + ":" + methodName + ":" + this.getLineNumber();
+    }
+
+    public Field getField() {
+        return field;
     }
 }

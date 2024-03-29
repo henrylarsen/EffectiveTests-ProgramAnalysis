@@ -3,12 +3,14 @@ package org.effective.tests.visitors;
 import com.github.javaparser.utils.Pair;
 import org.effective.tests.effects.Effect;
 import org.effective.tests.effects.Field;
+import org.effective.tests.effects.MethodData;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class EffectContext {
-    private Map<Pair<String, Integer>, List<Effect>> effects;
+    private Map<MethodData, List<Effect>> effects;
     private VarContext vCtx;
 
     /**
@@ -21,11 +23,11 @@ public class EffectContext {
         this.vCtx = vars;
     }
 
-    public Map<Pair<String, Integer>, List<Effect>> getEffectMap() {
-        HashMap<Pair<String, Integer>, List<Effect>> filteredMap = new HashMap<>();
+    public Map<MethodData, List<Effect>> getEffectMap() {
+        HashMap<MethodData, List<Effect>> filteredMap = new HashMap<>();
 
-        for (Map.Entry<Pair<String, Integer>, List<Effect>> entry : effects.entrySet()) {
-            Pair<String, Integer> key = entry.getKey();
+        for (Map.Entry<MethodData, List<Effect>> entry : effects.entrySet()) {
+            MethodData key = entry.getKey();
             List<Effect> filteredEffects = isTestable(entry.getValue());
 
             if (!filteredEffects.isEmpty()) {
@@ -35,8 +37,9 @@ public class EffectContext {
         return filteredMap;
     }
 
-    public void addEffect(String methodName, int methodLine, Effect e) {
-        Pair<String, Integer> methodKey = new Pair(methodName, methodLine);
+    public void addEffect(String methodName, List<String> paramTypes, int methodLine, Effect e) {
+        MethodData methodKey = new MethodData(methodName, paramTypes, methodLine);
+
         List ctxList = effects.get(methodKey);
         if (ctxList == null) {
             ctxList = new ArrayList<>();
@@ -55,7 +58,7 @@ public class EffectContext {
 
     public List<Effect> getAllEffects() {
         List<Effect> allEffects = new ArrayList();
-        for (Map.Entry<Pair<String, Integer>, List<Effect>> entry : effects.entrySet()) {
+        for (Map.Entry<MethodData, List<Effect>> entry : effects.entrySet()) {
             allEffects.addAll(entry.getValue());
         };
         return allEffects;
@@ -71,5 +74,15 @@ public class EffectContext {
 
     public VarContext getVarCtx() {
         return vCtx;
+    }
+
+    public List<Effect> getMethodEffects(String methodName, List<String> paramTypes) {
+        for (Map.Entry<MethodData, List<Effect>> entry : effects.entrySet()) {
+            MethodData key = entry.getKey();
+            if (key.methodName.equals(methodName) && key.paramTypes.equals(paramTypes)) {
+                return entry.getValue();
+            }
+        }
+        return new ArrayList<>();
     }
 }

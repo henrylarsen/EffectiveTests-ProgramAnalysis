@@ -12,4 +12,5 @@ public class Mutation extends Effect {
         this.object = o;
         this.objectName = objectName;
     }
+
 }
