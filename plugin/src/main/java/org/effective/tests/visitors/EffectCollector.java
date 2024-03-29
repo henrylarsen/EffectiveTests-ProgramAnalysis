@@ -4,15 +4,12 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.utils.Pair;
 import org.effective.tests.effects.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Collects the effects within a JavaParser AST.
@@ -40,7 +37,7 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         }
 
         String methodName = method.getNameAsString();
-        int methodLine = method.getBegin().get().line;
+        int methodLine = getLineNumber(method);
         Expression exp = rs.getExpression().orElse(null);
 
         // Return statements with no value should not be registered as effects
@@ -48,7 +45,14 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
             return;
         }
 
-        Effect e = new Return(methodName, rs.getBegin().get().line);
+        Effect e;
+        int returnLine = getLineNumber(rs);
+        String fieldName = isGetter(method, ctx.getVarCtx());
+        if (fieldName != null) {
+            e = new Getter(methodName, returnLine, fieldName);
+        } else {
+            e = new Return(methodName, returnLine);
+        }
         ctx.addEffect(methodName, methodLine, e);
     }
 
@@ -62,28 +66,16 @@ public class EffectCollector extends NodeVisitor<EffectContext> {
         }
 
         String methodName = method.getNameAsString();
-        int methodLine = method.getBegin().get().line;
+        int methodLine = getLineNumber(method);
         String fieldName = a.getTarget().toString();
         Field f = ctx.getField(fieldName);
 
-        if (f != null && !ctx.isLocalVariable(methodName, methodLine, fieldName)) {
-            Effect e = new Modification(methodName, a.getBegin().get().line, f);
+        if (f != null && !ctx.getVarCtx().isLocalVariable(methodName, methodLine, fieldName)) {
+            Effect e = new Modification(methodName, getLineNumber(a), f);
             ctx.addEffect(methodName, methodLine, e);
         }
     }
 
-    public List<Effect> getAllEffects() {
-        return ctx.getAllEffects();
-    }
-
-    public List<Effect> getAllTestableEffects() {
-        return ctx.getAllTestableEffects();
-    }
-
-    /**
-     * @return The collector's EffectContext.
-     * <b>Note:</b> should not be used as a direct API. Effects are accessible through other methods.
-     */
     public EffectContext getCtx() {
         return ctx;
     }

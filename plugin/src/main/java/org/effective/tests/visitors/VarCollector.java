@@ -6,14 +6,11 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.effective.tests.effects.Field;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,7 +43,7 @@ public class VarCollector extends NodeVisitor<VarContext> {
     public void visit(final VariableDeclarationExpr vd, final VarContext vars) {
         MethodDeclaration method = getParent(vd, MethodDeclaration.class);
         String methodName = method.getNameAsString();
-        int methodLine = method.getBegin().get().line;
+        int methodLine = getLineNumber(method);
         List<String> variableNames = vd.getVariables().stream().map(v -> v.getNameAsString()).collect(Collectors.toList());
         vars.addLocalVariables(methodName, methodLine, variableNames);
     }
@@ -73,16 +70,13 @@ public class VarCollector extends NodeVisitor<VarContext> {
             throw new IllegalStateException("Return statement should be within a method");
         }
 
-        Expression exp = rs.getExpression().orElse(null);
-
-        if (exp instanceof NameExpr) {
-            String fieldName = exp.asNameExpr().getNameAsString();
-            Set<Field> fields = vars.getFields();
-            Field f = getField(fields, fieldName);
-            if (f != null && isGetter(method, vars)) {
-                f.setAvailability(true);
-            }
+        Set<Field> fields = vars.getFields();
+        String fieldName = isGetter(method, vars);
+        Field f = getField(fields, fieldName);
+        if (f != null) {
+            f.setAvailability(true);
         }
+
     }
 
     private Field getField(Set<Field> fields, String fieldName) {
@@ -92,12 +86,6 @@ public class VarCollector extends NodeVisitor<VarContext> {
             }
         }
         return null;
-    }
-
-    private boolean isGetter(MethodDeclaration method, VarContext vars) {
-        EffectCollector ec = new EffectCollector();
-        ec.collectEffects(method, vars);
-        return (ec.getAllEffects().size() == 1);
     }
 
 }

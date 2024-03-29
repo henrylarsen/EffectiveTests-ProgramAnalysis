@@ -4,10 +4,7 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 
 import com.github.javaparser.utils.Pair;
-import org.effective.tests.effects.Effect;
-import org.effective.tests.effects.Field;
-import org.effective.tests.effects.Modification;
-import org.effective.tests.effects.Return;
+import org.effective.tests.effects.*;
 import org.effective.tests.visitors.VarCollector;
 import org.effective.tests.visitors.EffectContext;
 import org.effective.tests.visitors.EffectCollector;
@@ -59,7 +56,7 @@ public class EffectCollectorTest {
             List<Effect> testableEffects = ctx.getAllTestableEffects();
             assertEquals(ctx.getEffectMap().size(), 1);
             assertEquals(ctx.getAllEffects().size(), 1);
-            assertTrue(testableEffects.contains(new Return("getX", 10)));
+            assertTrue(testableEffects.contains(new Getter("getX", 10, "x")));
 
         } catch (IOException e) {
             fail(e);
@@ -80,8 +77,8 @@ public class EffectCollectorTest {
             Field b = new Field("b");
             Field c = new Field("c", true);
 
-            assertTrue(testableEffects.contains(new Return("getA", 13)));
-            assertTrue(testableEffects.contains(new Return("getC", 17)));
+            assertTrue(testableEffects.contains(new Getter("getA", 13, "a")));
+            assertTrue(testableEffects.contains(new Getter("getC", 17, "c")));
             assertTrue(testableEffects.contains(new Modification("setA", 21, a)));
             assertTrue(testableEffects.contains(new Modification("foo", 26, a)));
             assertTrue(testableEffects.contains(new Modification("foo", 27, c)));

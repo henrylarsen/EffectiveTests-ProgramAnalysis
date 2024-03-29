@@ -46,12 +46,7 @@ public class EffectContext {
     }
 
     public Field getField(String name) {
-        for (Field f : vCtx.getFields()) {
-            if (f.getName().equals(name)) {
-                return f;
-            }
-        }
-        return null;
+        return vCtx.getField(name);
     }
 
     public Set<Field> getFields() {
@@ -74,12 +69,7 @@ public class EffectContext {
         return effects.stream().filter(e -> e.isTestable()).collect(Collectors.toList());
     }
 
-    public List<String> getLocalVariables(String methodName, int methodLine) {
-        return vCtx.getLocalVariables(methodName, methodLine);
-    }
-
-    public boolean isLocalVariable(String methodName, int methodLine, String fieldName) {
-        List<String> locals = getLocalVariables(methodName, methodLine);
-        return locals != null && locals.contains(fieldName);
+    public VarContext getVarCtx() {
+        return vCtx;
     }
 }
