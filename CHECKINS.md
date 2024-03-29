@@ -247,4 +247,8 @@ usability improvements, and other concerns we want addressed by the study.
 Our planned timeline from Checkin 2 is still accurate. With our tasks assigned, we have a sprint until March 31st at 
 which point we should have an MVP and be performing user study 2.
 
+# Check-in 5
+We have already ironed out the tasks for our final user study, so as soon as we're finished our MVP this weekend, we can run the study on Tuesday/Wednesday next week.
+We will have a quick turnaround to address final feedback from the study before Saturday. Our video will be filmed next weekend for a submission on Sunday evening.
+
 
