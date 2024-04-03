@@ -10,16 +10,16 @@ public class FModders {
         c = 2;
     }
 
+    public void setA(int x) {
+        a = x;
+    }
+
     public int getA() {
         return a;
     }
 
     public int getC() {
         return c;
-    }
-
-    public void setA(int x) {
-        a = x;
     }
 
     public void foo(int x) {
@@ -29,6 +29,10 @@ public class FModders {
         } else {
             b = x;
         }
+    }
+
+    public int sendThree() {
+        return 3;
     }
 
     // Should not be added as a testable effect because b has no getter
