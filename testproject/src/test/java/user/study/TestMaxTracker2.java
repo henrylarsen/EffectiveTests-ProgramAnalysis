@@ -1,11 +1,12 @@
 package user.study;
 
+import org.effective.tests.EffectiveTest;
 import org.junit.Test;
 
 // TODO Task 2 (Predictive): Observe the two following tests. For each of the tests, predict the output of Effective
 //  assuming that that test is the only one testing MaxTracker
 
-// @EffectiveTest(user.study.MaxTracker.class)
+@EffectiveTest(MaxTracker.class)
 public class TestMaxTracker2 {
 
     @Test // 2.1:

@@ -1,4 +1,4 @@
-package org.effective.tests.data;
+package org.effective.tests.data.inject;
 
 public class FModders {
     private int a, b, c;

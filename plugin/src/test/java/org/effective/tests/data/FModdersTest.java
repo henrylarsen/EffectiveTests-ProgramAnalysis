@@ -1,9 +1,12 @@
 package org.effective.tests.data;
 
+import org.effective.tests.EffectiveTest;
+import org.effective.tests.data.inject.FModders;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@EffectiveTest(FModders.class)
 public class FModdersTest {
     @Test
     void test1() {

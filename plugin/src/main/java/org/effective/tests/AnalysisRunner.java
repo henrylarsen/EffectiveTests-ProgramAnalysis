@@ -1,11 +1,13 @@
 package org.effective.tests;
 
+import com.github.javaparser.ast.CompilationUnit;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -18,10 +20,24 @@ public class AnalysisRunner {
         // TODO: Complete this rough outline of steps:
 
         // Crawl targetPath to collect annotated test files and their files under test that need injection
+        ClassCollector cc = new ClassCollector();
+        cc.collectClasses(targetPath);
 
         // For each file under test, analyze code for effects and perform injections accordingly
+        Map<String, CompilationUnit> sourceClasses = cc.getSourceClasses();
 
         // For each test file, analyze code for effect assertions and perform injections accordingly
+        Map<Path, TestData> testData = cc.getTestClassData();
+
+        /* For Ron: you can iterate through the map and call
+        e.getValue().getSourceClassName(), which returns a string (to be your targetClass),
+        and e.getValue().getTestClass(), which returns a CompilationUnit,
+        for your analysis
+         */
+
+        System.out.println("Sources: " + sourceClasses.entrySet());
+
+        System.out.println("Tests: " + testData.entrySet());
 
         // Inject code to produce results, likely as an afterAll of some sort
 

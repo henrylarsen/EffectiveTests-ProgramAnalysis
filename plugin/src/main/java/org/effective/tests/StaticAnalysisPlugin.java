@@ -50,4 +50,5 @@ public class StaticAnalysisPlugin implements Plugin<Project> {
             System.out.println("WARNING: Source set '" + setName + "' not found");
         }
     }
+
 }
