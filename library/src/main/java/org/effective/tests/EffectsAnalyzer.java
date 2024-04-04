@@ -1,6 +1,7 @@
 package org.effective.tests;
 
 import org.effective.tests.util.GCMonitor;
+import org.effective.tests.util.ResultsPrettyPrinter;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
  * @param <T>
  * @see InstanceEffectsAnalyzer
  */
+@SuppressWarnings("unchecked")
 public class EffectsAnalyzer<T> {
     private static final Map<Class<?>, EffectsAnalyzer<?>> effectsAnalyzers = new HashMap<>();
     // concurrent hash map used as GC monitor will remove elements from another thread
@@ -93,5 +95,11 @@ public class EffectsAnalyzer<T> {
                 .stream()
                 .filter(effect -> !testedEffects.contains(effect))
                 .collect(Collectors.toSet());
+    }
+
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            ResultsPrettyPrinter.print(effectsAnalyzers);
+        }));
     }
 }

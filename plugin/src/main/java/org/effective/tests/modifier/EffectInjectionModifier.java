@@ -53,16 +53,16 @@ public class EffectInjectionModifier extends NodeVisitor<Void> {
         for (MethodData key: keys) {
             List<Effect> effects = effectsMap.get(key);
             for (Effect e: effects) {
-                String name;
-                if (e.getClass() == Modification.class) {
-                    name = ((Modification) e).getField().getName();
-                } else if (e.getClass() == Getter.class) {
-                    name = ((Getter) e).getFieldName();
-                }else {
-                    name = e.getMethodName();
+                if (e.getClass() != Getter.class) {
+                    String name;
+                    if (e.getClass() == Modification.class) {
+                        name = ((Modification) e).getField().getName();
+                    } else {
+                        name = e.getMethodName();
+                    }
+                    Expression argExpr = new StringLiteralExpr(name + ":" + e.getLineNumber());
+                    argList.add(argExpr);
                 }
-                Expression argExpr = new StringLiteralExpr(name +":"+e.getLineNumber());
-                argList.add(argExpr);
             }
 
         }
@@ -103,9 +103,9 @@ public class EffectInjectionModifier extends NodeVisitor<Void> {
                 Statement addedStatement;
                 if (e.getClass() == Getter.class){
                     String name = ((Getter) e).getFieldName();
-                    addedStatement = new ExpressionStmt(new NameExpr("EffectsAnalyzer.getInstanceAnalyzer(this).registerRead(\"" + name + "\")"));
+                    addedStatement = new ExpressionStmt(new NameExpr("EffectsAnalyzer.getInstance(this).registerRead(\"" + name + "\")"));
                 } else {
-                    addedStatement = new ExpressionStmt(new NameExpr("EffectsAnalyzer.getInstanceAnalyzer(this).registerReturn(\"" + e.getMethodName() +"\"," + e.getLineNumber() + ")"));
+                    addedStatement = new ExpressionStmt(new NameExpr("EffectsAnalyzer.getInstance(this).registerReturn(\"" + e.getMethodName() +"\"," + e.getLineNumber() + ")"));
                 }
                 parentBlock.addStatement(parentBlock.getStatements().indexOf(rs), addedStatement);
                 break;
@@ -143,7 +143,7 @@ public class EffectInjectionModifier extends NodeVisitor<Void> {
         for (Effect e: ctxList) {
             if (e.getLineNumber() == a.getBegin().get().line) {
                 if (e.getClass() == Modification.class) {
-                    Statement addedStatement = new ExpressionStmt(new NameExpr("EffectsAnalyzer.getInstanceAnalyzer" +
+                    Statement addedStatement = new ExpressionStmt(new NameExpr("EffectsAnalyzer.getInstance" +
                             "(this).registerMutation(\"" + ((Modification) e).getField().getName() + "\", " + e.getLineNumber() + ")"));
                     parentBlock.addStatement((parentBlock.getEnd().get().line - e.getLineNumber()), addedStatement);
                     break;

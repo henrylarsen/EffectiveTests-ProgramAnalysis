@@ -22,12 +22,10 @@ public class FModdersTest {
         int aField = fm1.getA();
         int cField;
         cField = fm1.getC();
-        int dField = fm1.d;
 
         // assertions
         assertEquals(3, aField);
         assertEquals(2, cField); // does not have a code injection b/c C was never modified, so no need to register the assert
-        assertEquals(0, dField);
         assertEquals(3, fm1.sendThree());
 
         // using a method with multiple effects and using getters to obtain the values
@@ -41,8 +39,5 @@ public class FModdersTest {
         } else {
             assertEquals(13, fm1.getA());
         }
-
-        fm1.d = 21;
-        assertEquals(21, fm1.d);
     }
 }

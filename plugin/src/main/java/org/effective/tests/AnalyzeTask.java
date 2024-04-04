@@ -12,7 +12,6 @@ public abstract class AnalyzeTask extends DefaultTask {
     }
     @TaskAction
     public void analyze() {
-        System.out.println("Running analyzer. Will output files to: " + targetPath);
         AnalysisRunner runner = new AnalysisRunner();
         runner.run(sourcePath, targetPath);
     }

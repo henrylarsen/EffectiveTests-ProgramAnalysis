@@ -2,7 +2,7 @@ package user.study;
 
 public class FModders {
     private int a, b, c;
-    public int d, e;
+    public int e;
 
     public FModders() {
         a = 0;

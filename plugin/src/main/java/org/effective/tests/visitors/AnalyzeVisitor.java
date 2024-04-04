@@ -64,9 +64,7 @@ public class AnalyzeVisitor extends NodeVisitor<AnalyzeContext> {
                 analyzeContext.classInstances.put(vd.getNameAsString(), new HashMap<>());
             } else if (node instanceof AssignExpr ae) { // case where it assigns to an existing variable
                 String targetName = ae.getTarget().toString();
-                if (analyzeContext.classInstances.containsKey(targetName)) { // if it does exist, continue to handle the existing effects
-                    System.err.println("Warning: " + targetName + " variable will be overwritten");
-                } else { // only put when it doesnt exist
+                if (!analyzeContext.classInstances.containsKey(targetName)) {
                     analyzeContext.classInstances.put(targetName, new HashMap<>());
                 }
             }
@@ -108,7 +106,6 @@ public class AnalyzeVisitor extends NodeVisitor<AnalyzeContext> {
     public AssignExpr visit(final AssignExpr ae, final AnalyzeContext analyzeContext) {
         String targetName = ae.getTarget().toString();
         if (analyzeContext.variableInstances.containsKey(targetName)) {
-            System.err.println("Warning: " + targetName + " variable will be overwritten");
             if (!(ae.getValue() instanceof FieldAccessExpr)) { // if assignment isn't a field access then remove it (i = 3)
                 analyzeContext.variableInstances.remove(targetName);
             }
@@ -127,9 +124,6 @@ public class AnalyzeVisitor extends NodeVisitor<AnalyzeContext> {
                 analyzeContext.variableInstances.put(vd.getNameAsString(), new VarClassField(classInstance, field));
             } else if (node instanceof AssignExpr ae) { // case where it assigns an existing variable
                 String targetName = ae.getTarget().toString();
-                if (analyzeContext.variableInstances.containsKey(targetName)) {
-                    System.err.println("Warning: " + targetName + " variable will be overwritten");
-                }
                 Expression fieldScope = fae.getScope(); // if it's direct assignment to class field (class.field = 3)
                 if (fieldScope instanceof NameExpr ne && analyzeContext.classInstances.containsKey(ne.toString())) {
                     analyzeContext.classInstances.get(ne.toString()).put(new Field(fae.getNameAsString()), new DirectMod());
@@ -293,7 +287,7 @@ public class AnalyzeVisitor extends NodeVisitor<AnalyzeContext> {
     }
 
     private void injectAssertFor(MethodCallExpr mce, String classInstance, String effect) {
-        Statement addedStatement = new ExpressionStmt(new NameExpr("EffectsAnalyzer.getInstanceAnalyzer("+ classInstance + ").registerAssert(\"" + effect + "\")"));
+        Statement addedStatement = new ExpressionStmt(new NameExpr("EffectsAnalyzer.getInstance("+ classInstance + ").registerAssert(\"" + effect + "\")"));
         ExpressionStmt expression = getParent(mce, ExpressionStmt.class);
         BlockStmt parentBlock = getParent(mce, BlockStmt.class);
         parentBlock.addStatement(parentBlock.getStatements().indexOf(expression) + 1, addedStatement);

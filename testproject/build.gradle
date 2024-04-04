@@ -6,7 +6,7 @@
  */
 
 plugins {
-    id 'org.effective.tests' version '1.5-SNAPSHOT'
+    id 'org.effective.tests' version '1.0'
     id 'java'
 }
 

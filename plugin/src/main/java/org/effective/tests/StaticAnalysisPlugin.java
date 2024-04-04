@@ -47,7 +47,6 @@ public class StaticAnalysisPlugin implements Plugin<Project> {
             SourceSet mainSourceSet = container.getByName(setName);
             mainSourceSet.getJava().setSrcDirs(Collections.singleton(targetDirectory + setName + "/java"));
         } catch (UnknownDomainObjectException e) {
-            System.out.println("WARNING: Source set '" + setName + "' not found");
         }
     }
 

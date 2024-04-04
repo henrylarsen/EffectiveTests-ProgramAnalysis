@@ -22,10 +22,15 @@ import java.util.stream.Stream;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class AnalysisRunner {
+    String targetPath;
 
-    public String run(String sourcePath, String targetPath) {
-        System.out.println("Starting analysis...");
-        prepareAnalysisDirectory(sourcePath, targetPath);
+    AnalysisRunner() {
+        targetPath = "";
+    }
+
+    public void run(String sourcePath, String targetPath) {
+        this.targetPath = targetPath;
+        prepareAnalysisDirectory(sourcePath);
 
         // Crawl targetPath to collect annotated test files and their files under test that need injection
         ClassCollector cc = new ClassCollector();
@@ -37,24 +42,12 @@ public class AnalysisRunner {
         // For each test file, analyze code for effect assertions and perform injections accordingly
         Map<Path, TestData> testData = cc.getTestClassData();
 
-        /* For Ron: you can iterate through the map and call
-        e.getValue().getSourceClassName(), which returns a string (to be your targetClass),
-        and e.getValue().getTestClass(), which returns a CompilationUnit,
-        for your analysis
-         */
-        System.out.println("Sources: " + sourceClasses.entrySet());
-        System.out.println("Tests: " + testData.entrySet());
-
-        sourceInjection(sourceClasses, targetPath);
+        sourceInjection(sourceClasses);
         Map<String, Map<MethodData, Set<VarType>>> results = analyzeTests(sourceClasses, testData);
-
-        // Inject code to produce results, likely as an afterAll of some sort
-
-        return "ran";
     }
 
     // return map of class to method use and its coverage
-    public static Map<String, Map<MethodData, Set<VarType>>> analyzeTests(Map<String, CompilationUnit> sourceClasses, Map<Path, TestData> testClasses) {
+    public Map<String, Map<MethodData, Set<VarType>>> analyzeTests(Map<String, CompilationUnit> sourceClasses, Map<Path, TestData> testClasses) {
         Map<String, Map<MethodData, Set<VarType>>> coverageResults = new HashMap<>(); // class to map of methods used and their coverage
         for (Map.Entry<String, CompilationUnit> sourceClass : sourceClasses.entrySet()) {
             String sourceName = sourceClass.getKey();
@@ -73,7 +66,13 @@ public class AnalysisRunner {
                     CompilationUnit cuTest = testClass.getValue().getTestClass();
                     av.analyzeTest(cuTest, sourceName);
                     // reset the class and variable instances to continue collecting coverage from other tests
-                    System.out.println(cuTest);
+                    try {
+                        String path = testClass.getKey().toString();
+                        FileWriterWrapper fw = new FileWriterWrapper(path);
+                        fw.write(cuTest.toString());
+                    } catch (Exception e) {
+                        System.out.println("Error writing to file: " + e);
+                    }
                     av.getContext().resetInstances();
                 }
             }
@@ -82,7 +81,7 @@ public class AnalysisRunner {
         return coverageResults;
     }
 
-    private void sourceInjection(Map<String, CompilationUnit> sourceClasses, String targetPath){
+    private void sourceInjection(Map<String, CompilationUnit> sourceClasses){
         for (String key : sourceClasses.keySet()) {
             CompilationUnit cu = sourceClasses.get(key);
             VarCollector varCollector = new VarCollector();
@@ -91,19 +90,18 @@ public class AnalysisRunner {
             Map<MethodData, List<Effect>> effects = effectCollector.collectEffects(cu, vars);
             EffectInjectionModifier effectInjectionModifier = new EffectInjectionModifier(effects);
             effectInjectionModifier.visit(cu, null);
-            String filePath = targetPath + key + ".java";
+            String filePath = targetPath + "/main/java/user/study/" + key + ".java";
             try {
                 FileWriterWrapper fw = new FileWriterWrapper(filePath);
                 fw.write(cu.toString());
             } catch (Exception e) {
                 System.out.println("Error writing to file: " + e);
-                ;
             }
         }
     }
 
 
-    private void prepareAnalysisDirectory(String sourcePath, String targetPath) {
+    private void prepareAnalysisDirectory(String sourcePath) {
         try {
             // Source: https://stackoverflow.com/questions/29076439/java-8-copy-directory-recursively
             Path target = Paths.get(targetPath);
