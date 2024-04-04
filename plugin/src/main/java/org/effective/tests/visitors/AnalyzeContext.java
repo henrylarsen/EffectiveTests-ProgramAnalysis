@@ -32,6 +32,20 @@ public class AnalyzeContext {
         return newContext;
     }
 
+    // use when analyzing a new test file but keeping the methods covered from a previous run
+    public void resetInstances() {
+        classInstances.clear();
+        variableInstances.clear();
+    }
+
+    public Map<MethodData, Set<VarType>> getUsedMethodsAndCoverage() {
+        return usedMethodsAndCoverage;
+    }
+
+    public void addMethodCoverage(MethodData key, VarType varType) {
+        usedMethodsAndCoverage.get(key).add(varType);
+    }
+
     public void intersect(AnalyzeContext ac) {
         Map<MethodData, Set<VarType>> intersectMAC = new HashMap<>();
         Map<String, Map<Field, MethodData>> intersectInstances = new HashMap<>();
@@ -85,14 +99,8 @@ public class AnalyzeContext {
 
     // any overrides will be taken from ac
     public void union(AnalyzeContext ac) {
-        for (Map.Entry<MethodData, Set<VarType>> entry : ac.usedMethodsAndCoverage.entrySet()) {
-            MethodData key = entry.getKey();
-            if (this.usedMethodsAndCoverage.containsKey(key)) {
-                this.usedMethodsAndCoverage.get(key).addAll(entry.getValue());
-            } else {
-                this.usedMethodsAndCoverage.put(key, entry.getValue());
-            }
-        }
+        unscopedUnion(ac);
+
         for (Map.Entry<String, Map<Field, MethodData>> entry : ac.classInstances.entrySet()) {
             String key = entry.getKey();
             if (this.classInstances.containsKey(key)) {
@@ -103,6 +111,19 @@ public class AnalyzeContext {
                 this.classInstances.put(key, entry.getValue());
             }
         }
+
         this.variableInstances.putAll(ac.variableInstances);
+    }
+
+    // union two contexts from different scopes
+    public void unscopedUnion(AnalyzeContext ac) {
+        for (Map.Entry<MethodData, Set<VarType>> entry : ac.usedMethodsAndCoverage.entrySet()) {
+            MethodData key = entry.getKey();
+            if (this.usedMethodsAndCoverage.containsKey(key)) {
+                this.usedMethodsAndCoverage.get(key).addAll(entry.getValue());
+            } else {
+                this.usedMethodsAndCoverage.put(key, entry.getValue());
+            }
+        }
     }
 }

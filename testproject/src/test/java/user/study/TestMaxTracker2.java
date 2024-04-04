@@ -3,27 +3,30 @@ package user.study;
 import org.effective.tests.EffectiveTest;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 // TODO Task 2 (Predictive): Observe the two following tests. For each of the tests, predict the output of Effective
 //  assuming that that test is the only one testing MaxTracker
 
-@EffectiveTest(MaxTracker.class)
+@EffectiveTest(MaxTracker2.class)
 public class TestMaxTracker2 {
 
     @Test // 2.1:
     public void testMaxTracker1() {
-        MaxTracker tracker = new MaxTracker();
+        MaxTracker2 tracker = new MaxTracker2();
         int num;
         for (int i = 0; i < 4; i++) {
             tracker.trackNumber(i);
             num = tracker.getHighestEven();
             num = tracker.getHighestOdd();
-            assert (i >= num);
+            assertTrue(i >= num);
         }
     }
 
     @Test // 2.2:
     public void testMaxTracker2() {
-        MaxTracker tracker = new MaxTracker();
+        MaxTracker2 tracker = new MaxTracker2();
         int num;
         for (int i = 0; i < 4; i++) {
             tracker.trackNumber(i);
@@ -32,7 +35,7 @@ public class TestMaxTracker2 {
             } else {
                 num = tracker.getHighestOdd();
             }
-            assert(num == i);
+            assertEquals(num, i);
         }
     }
 

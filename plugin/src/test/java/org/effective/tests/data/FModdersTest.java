@@ -27,8 +27,8 @@ public class FModdersTest {
 
         // assertions
         assertEquals(3, aField);
-        assertEquals(3, cField); // does not have a code injection b/c C was never modified, so no need to register the assert
-        assertEquals(3, dField);
+        assertEquals(2, cField); // does not have a code injection b/c C was never modified, so no need to register the assert
+        assertEquals(0, dField);
         assertEquals(3, fm1.sendThree());
 
         // using a method with multiple effects and using getters to obtain the values

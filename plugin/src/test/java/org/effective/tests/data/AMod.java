@@ -1,10 +1,10 @@
 package org.effective.tests.data.inject;
 
-public class FModders {
+public class AMod {
     private int a, b, c;
     public int d, e;
 
-    public FModders() {
+    public AMod() {
         a = 0;
         b = 1;
         c = 2;
@@ -38,9 +38,5 @@ public class FModders {
     // Should not be added as a testable effect because b has no getter
     public void setB(int x) {
         b = x;
-    }
-
-    public int sendFour() {
-        return 4;
     }
 }

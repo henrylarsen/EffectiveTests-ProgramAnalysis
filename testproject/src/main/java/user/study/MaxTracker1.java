@@ -1,11 +1,11 @@
 package user.study;
 
-public class MaxTracker {
+public class MaxTracker1 {
     private int highestEven = Integer.MIN_VALUE;
     private int highestOdd = Integer.MIN_VALUE;
 
     // Constructor
-    public MaxTracker() {
+    public MaxTracker1() {
     }
 
     // Adds number to track in this class.

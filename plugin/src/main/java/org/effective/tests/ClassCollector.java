@@ -4,6 +4,8 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -53,27 +55,29 @@ public class ClassCollector {
                 Files.walk(target)
                         .filter(Files::isRegularFile)
                         .filter(file -> file.toString().endsWith(".java")).forEach(p -> {
-                            try {
-                                CompilationUnit cu = StaticJavaParser.parse(Files.newInputStream(p));
-                                allClasses.put(stripPathToClassName(p), cu);
+                    try {
+                        StaticJavaParser.getConfiguration().setSymbolResolver(new JavaSymbolSolver(new ReflectionTypeSolver()));
+                        CompilationUnit cu = StaticJavaParser.parse(Files.newInputStream(p));
+                        allClasses.put(stripPathToClassName(p), cu);
 
-                                List<ClassOrInterfaceDeclaration> classes = cu.findAll(ClassOrInterfaceDeclaration.class);
 
-                                // Iterate over classes
-                                for (ClassOrInterfaceDeclaration cd : classes) {
-                                    AnnotationExpr ae = cd.getAnnotationByName("EffectiveTest").orElse(null);
-                                    if (ae instanceof SingleMemberAnnotationExpr smae) {
-                                        String className = stripExtension(smae.getMemberValue().toString(), ".class");
-                                        // initializes source class entries to be filled in after the whole directory has been traversed
-                                        sourceClasses.put(className, null);
-                                        // only collect a test class if it contains a valid source class
-                                        testClasses.put(p, new TestData(cu, className));
-                                    }
-                                }
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
+                        List<ClassOrInterfaceDeclaration> classes = cu.findAll(ClassOrInterfaceDeclaration.class);
+
+                        // Iterate over classes
+                        for (ClassOrInterfaceDeclaration cd : classes) {
+                            AnnotationExpr ae = cd.getAnnotationByName("EffectiveTest").orElse(null);
+                            if (ae instanceof SingleMemberAnnotationExpr smae) {
+                                String className = stripExtension(smae.getMemberValue().toString(), ".class");
+                                // initializes source class entries to be filled in after the whole directory has been traversed
+                                sourceClasses.put(className, null);
+                                // only collect a test class if it contains a valid source class
+                                testClasses.put(p, new TestData(cu, className));
                             }
-                        });
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
         } catch (IOException e) {
             // can't parse the root directory
