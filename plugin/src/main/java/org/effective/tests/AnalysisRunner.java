@@ -1,6 +1,13 @@
 package org.effective.tests;
 
 import com.github.javaparser.ast.CompilationUnit;
+import org.effective.tests.effects.Effect;
+import org.effective.tests.effects.MethodData;
+import org.effective.tests.modifier.EffectInjectionModifier;
+import org.effective.tests.modifier.FileWriterWrapper;
+import org.effective.tests.visitors.EffectCollector;
+import org.effective.tests.visitors.VarCollector;
+import org.effective.tests.visitors.VarContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,9 +46,32 @@ public class AnalysisRunner {
 
         System.out.println("Tests: " + testData.entrySet());
 
+        sourceInjection(sourceClasses, targetPath);
+
         // Inject code to produce results, likely as an afterAll of some sort
 
         return "ran";
+    }
+
+    private void sourceInjection(Map<String, CompilationUnit> sourceClasses, String targetPath) {
+
+        for (String key: sourceClasses.keySet()) {
+            CompilationUnit cu = sourceClasses.get(key);
+            VarCollector varCollector = new VarCollector();
+            EffectCollector effectCollector = new EffectCollector();
+            VarContext vars = varCollector.collectVars(cu);
+            Map<MethodData, List<Effect>> effects = effectCollector.collectEffects(cu, vars);
+            EffectInjectionModifier effectInjectionModifier = new EffectInjectionModifier(effects);
+            effectInjectionModifier.visit(cu, null);
+            String filePath = targetPath + key + ".java";
+            try {
+                FileWriterWrapper fw = new FileWriterWrapper(filePath);
+                fw.write(cu.toString());
+            } catch (Exception e) {
+                System.out.println("Error writing to file: " + e);;
+            }
+
+        }
     }
 
     private void prepareAnalysisDirectory(String sourcePath, String targetPath) {

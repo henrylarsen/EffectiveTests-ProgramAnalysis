@@ -53,27 +53,27 @@ public class ClassCollector {
                 Files.walk(target)
                         .filter(Files::isRegularFile)
                         .filter(file -> file.toString().endsWith(".java")).forEach(p -> {
-                    try {
-                        CompilationUnit cu = StaticJavaParser.parse(Files.newInputStream(p));
-                        allClasses.put(stripPathToClassName(p), cu);
+                            try {
+                                CompilationUnit cu = StaticJavaParser.parse(Files.newInputStream(p));
+                                allClasses.put(stripPathToClassName(p), cu);
 
-                        List<ClassOrInterfaceDeclaration> classes = cu.findAll(ClassOrInterfaceDeclaration.class);
+                                List<ClassOrInterfaceDeclaration> classes = cu.findAll(ClassOrInterfaceDeclaration.class);
 
-                        // Iterate over classes
-                        for (ClassOrInterfaceDeclaration cd : classes) {
-                        AnnotationExpr ae = cd.getAnnotationByName("EffectiveTest").orElse(null);
-                            if (ae instanceof SingleMemberAnnotationExpr smae) {
-                                String className = stripExtension(smae.getMemberValue().toString(), ".class");
-                                // initializes source class entries to be filled in after the whole directory has been traversed
-                                sourceClasses.put(className, null);
-                                // only collect a test class if it contains a valid source class
-                                testClasses.put(p, new TestData(cu, className));
+                                // Iterate over classes
+                                for (ClassOrInterfaceDeclaration cd : classes) {
+                                    AnnotationExpr ae = cd.getAnnotationByName("EffectiveTest").orElse(null);
+                                    if (ae instanceof SingleMemberAnnotationExpr smae) {
+                                        String className = stripExtension(smae.getMemberValue().toString(), ".class");
+                                        // initializes source class entries to be filled in after the whole directory has been traversed
+                                        sourceClasses.put(className, null);
+                                        // only collect a test class if it contains a valid source class
+                                        testClasses.put(p, new TestData(cu, className));
+                                    }
+                                }
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
                             }
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                        });
             }
         } catch (IOException e) {
             // can't parse the root directory
