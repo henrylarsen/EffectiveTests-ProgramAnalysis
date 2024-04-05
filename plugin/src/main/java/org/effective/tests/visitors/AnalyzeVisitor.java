@@ -1,8 +1,10 @@
 package org.effective.tests.visitors;
 
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.nodeTypes.NodeWithExpression;
@@ -290,7 +292,16 @@ public class AnalyzeVisitor extends NodeVisitor<AnalyzeContext> {
         Statement addedStatement = new ExpressionStmt(new NameExpr("EffectsAnalyzer.getInstance("+ classInstance + ").registerAssert(\"" + effect + "\")"));
         ExpressionStmt expression = getParent(mce, ExpressionStmt.class);
         BlockStmt parentBlock = getParent(mce, BlockStmt.class);
-        parentBlock.addStatement(parentBlock.getStatements().indexOf(expression) + 1, addedStatement);
+        NodeList<Statement> statements = parentBlock.getStatements();
+        Optional<Range> methodRange1 = expression.getRange();
+        for (int i = 0; i < statements.size(); i++) {
+            Optional<Range> methodRange2 = statements.get(i).getRange();
+            if (methodRange1.equals(methodRange2)) {
+                parentBlock.addStatement(i + 1, addedStatement);
+                break;
+            }
+        }
+
     }
 
 }
