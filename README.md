@@ -6,7 +6,7 @@ coverage metric: checking that all side effects of class methods are covered by 
 The motivation is to help developers ensure their tests are actually asserting on values that should be asserted on, 
 addressing the assertions problem in a way that traditional test coverage metrics fail to do.
 
-See checkins in CHECKINS.md for project progress.
+See checkins in CHECKINS.md for project progress, and USERSTUDIES.md for the results of our user studies.
 
 ## Running our Project
 Our project is two packages: a gradle plugin and a java library. You could set up a new gradle project with our plugin
